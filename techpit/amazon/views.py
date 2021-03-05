@@ -1,10 +1,18 @@
+from django.shortcuts import render
 from django.views import generic
-from .models import * # この行を追加
+from .models import *
 
 class Lp(generic.TemplateView):
     template_name = 'amazon/lp.html'
 
-# ここから追加
+    # ここから追加
+    def get_context_data(self, **kwargs):
+        context = super(Lp, self).get_context_data(**kwargs)
+        all_items = Product.objects.all()
+        context['items'] = all_items
+        return context
+    # ここまで追加
+
 class ItemList(generic.ListView):
     model = Product
     template_name = 'amazon/item_list.html'
@@ -15,4 +23,11 @@ class ItemList(generic.ListView):
             q = self.request.GET['q']
             products = products.filter(name__icontains = q)
         return products
-# ここまで追加
+
+## 中略
+
+# [4-2] 商品詳細ビュー追加 ここから
+class ItemDetail(generic.DetailView):
+    model = Product
+    template_name = 'amazon/item_detail.html'
+# [4-2] 商品詳細ビュー追加 ここまで
